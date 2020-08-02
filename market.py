@@ -1,10 +1,15 @@
 from selenium import webdriver
 from collections import namedtuple
+from bs4 import BeautifulSoup
 import time
-    
-class Crawler():
-    def __init__( self ):
-        self.driverpath = "/home/johnny/finance/geckodriver"
+import requests
+from io import StringIO
+import pandas as pd
+import numpy as np
+
+class Market():
+    def index( self ):
+        self.driverpath = "./geckodriver"
         self.driver = webdriver.Firefox(executable_path=self.driverpath)
         self.finance_url = "https://finance.yahoo.com/"
         self.driver.get(self.finance_url)
@@ -47,3 +52,20 @@ class Crawler():
         print(self.rate)
         print(self.incremental)
         self.driver.close()
+    
+    def twse( self ):
+        self.TWSE_TABLE_LIST = ["價格指數(臺灣證券交易所)", 
+                          "大盤統計資訊",
+                          "漲跌證券數合計",
+                          "每日收盤行情(全部(不含權證、牛熊證))"]
+        self.twse_table = []
+        datestr = '20200131'
+        r = requests.post('https://www.twse.com.tw/exchangeReport/MI_INDEX?response=html&date=' + datestr + '&type=ALLBUT0999')   
+        soup = BeautifulSoup(r.text, 'html.parser')
+        
+        self.twse_table.append( soup.find_all('table')[0] )    
+        self.twse_table.append( soup.find_all('table')[6] )    
+        self.twse_table.append( soup.find_all('table')[7] )
+        self.twse_table.append( soup.find_all('table')[8] )        
+        
+        print(  self.twse_table[2] )

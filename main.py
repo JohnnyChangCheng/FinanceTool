@@ -1,3 +1,4 @@
-from crawler import Crawler
+from market import Market
 
-crawler = Crawler()
+crawler = Market()
+crawler.twse()
